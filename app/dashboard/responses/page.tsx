@@ -32,19 +32,49 @@ export default function ResponsesPage() {
     const fetchResponses = async () => {
       try {
         const supabase = getSupabaseClient()
+        
+        // Get current user first
+        const { data: { user }, error: userError } = await supabase.auth.getUser()
+        
+        if (userError || !user) {
+          console.error("User error:", userError)
+          return
+        }
+
+        // First, get the user's boxes
+        const { data: userBoxes, error: boxesError } = await supabase
+          .from("what_if_boxes")
+          .select("id, title, slug")
+          .eq("created_by", user.id)
+
+        if (boxesError) throw boxesError
+        
+        if (!userBoxes || userBoxes.length === 0) {
+          setResponses([])
+          return
+        }
+
+        const boxIds = userBoxes.map(box => box.id)
+        
+        // Now get responses only for the user's boxes
         const { data, error } = await supabase
           .from("responses")
-          .select(`
-            *,
-            box:box_id (
-              title,
-              slug
-            )
-          `)
+          .select("*")
+          .in("box_id", boxIds)
           .order("created_at", { ascending: false })
 
         if (error) throw error
-        setResponses(data || [])
+        
+        // Transform the data to match the expected structure
+        const transformedData = (data || []).map((response: any) => ({
+          ...response,
+          box: {
+            title: userBoxes.find(b => b.id === response.box_id)?.title || 'Unknown Box',
+            slug: userBoxes.find(b => b.id === response.box_id)?.slug || ''
+          }
+        })) as Response[]
+        
+        setResponses(transformedData)
       } catch (error) {
         console.error("Error fetching responses:", error)
       } finally {

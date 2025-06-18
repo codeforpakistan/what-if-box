@@ -326,9 +326,22 @@ export default function Home() {
             </div>
             <span className="text-sm font-medium text-gray-600">Virtual What If Box</span>
           </div>
-          <p className="text-sm text-gray-500 text-center md:text-right">
-            © {new Date().getFullYear()} Community-driven imagination, worldwide impact.
-          </p>
+          <div className="flex flex-col md:flex-row items-center gap-4 text-center md:text-right">
+            <p className="text-sm text-gray-500">
+              © {new Date().getFullYear()} Community-driven imagination, worldwide impact.
+            </p>
+            <p className="text-sm text-gray-500">
+              Made with ❤️ by{" "}
+              <a 
+                href="https://codeforpakistan.org" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:text-blue-800 font-medium transition-colors"
+              >
+                Code for Pakistan
+              </a>
+            </p>
+          </div>
         </div>
       </footer>
     </div>
