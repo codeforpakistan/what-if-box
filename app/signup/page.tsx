@@ -82,7 +82,8 @@ export default function SignUpPage() {
         options: {
           data: {
             name: formData.name,
-          }
+          },
+          emailRedirectTo: `${window.location.origin}/auth/callback`
         }
       })
 
