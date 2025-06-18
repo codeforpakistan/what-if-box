@@ -63,7 +63,18 @@ export default function Home() {
               Virtual What If Box
             </span>
           </div>
-          {/* Removed public login - admin access only */}
+          <nav className="flex items-center gap-4">
+            <Link href="/login">
+              <Button variant="ghost" className="text-gray-600 hover:text-gray-900">
+                Sign In
+              </Button>
+            </Link>
+            <Link href="/signup">
+              <Button className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white">
+                Join Community
+              </Button>
+            </Link>
+          </nav>
         </div>
       </header>
 
@@ -93,9 +104,9 @@ export default function Home() {
               </div>
               
               <div className="flex flex-col sm:flex-row items-center gap-4">
-                <Link href="/dashboard">
+                <Link href="/signup">
                   <Button size="lg" className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white px-8 py-6 text-lg">
-                    Explore Questions
+                    Start Creating
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </Link>
@@ -291,9 +302,9 @@ export default function Home() {
                 Every great change started with a simple question. What's yours?
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <Link href="/dashboard">
+                <Link href="/signup">
                   <Button size="lg" className="bg-white text-gray-900 hover:bg-gray-100 px-8 py-6 text-lg">
-                    Start Exploring
+                    Start Creating
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </Link>

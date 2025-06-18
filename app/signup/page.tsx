@@ -13,10 +13,15 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Lightbulb, ArrowLeft } from "lucide-react"
 import { getSupabaseClient } from "@/lib/supabase-client"
 
-export default function LoginPage() {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
+export default function SignUpPage() {
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    confirmPassword: "",
+    name: ""
+  })
   const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [isCheckingAuth, setIsCheckingAuth] = useState(true)
   const router = useRouter()
@@ -33,13 +38,6 @@ export default function LoginPage() {
           // Already logged in, redirect to dashboard
           router.push("/dashboard")
         }
-        
-        // Check for error messages in URL params
-        const urlParams = new URLSearchParams(window.location.search)
-        const errorParam = urlParams.get('error')
-        if (errorParam === 'unauthorized') {
-          setError("You don't have access to that resource.")
-        }
       } catch (error) {
         console.error("Session check error:", error)
       } finally {
@@ -50,39 +48,63 @@ export default function LoginPage() {
     checkSession()
   }, [router])
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     setError(null)
+    setSuccess(null)
+
+    // Validation
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords don't match")
+      setIsLoading(false)
+      return
+    }
+
+    if (formData.password.length < 6) {
+      setError("Password must be at least 6 characters long")
+      setIsLoading(false)
+      return
+    }
 
     try {
       const supabase = getSupabaseClient()
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+      
+      // Sign up the user
+      const { data, error: signUpError } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          data: {
+            name: formData.name,
+          }
+        }
       })
 
-      if (error) {
-        throw error
+      if (signUpError) {
+        throw signUpError
       }
 
-      console.log("Login successful, session created:", !!data.session)
-      console.log("Access token exists:", !!data.session?.access_token)
-      
-      // Check if session was properly set
-      const { data: sessionCheck } = await supabase.auth.getSession()
-      console.log("Session check after login:", !!sessionCheck.session)
-      
-      // Debug: Check what cookies are in the browser
-      if (typeof document !== 'undefined') {
-        console.log("Browser cookies after login:", document.cookie)
+      console.log("Signup successful:", !!data.user)
+
+      if (data.user && !data.session) {
+        // Email confirmation required
+        setSuccess("Please check your email and click the confirmation link to complete your registration.")
+      } else if (data.session) {
+        // Auto-login successful
+        setSuccess("Account created successfully! Redirecting...")
+        setTimeout(() => {
+          window.location.href = '/dashboard'
+        }, 1500)
       }
-      
-      // On successful login, force refresh browser to reload middleware
-      window.location.href = '/dashboard'
     } catch (error: any) {
-      console.error("Login error:", error)
-      setError(error.message || "Failed to sign in")
+      console.error("Signup error:", error)
+      setError(error.message || "Failed to create account")
     } finally {
       setIsLoading(false)
     }
@@ -113,15 +135,15 @@ export default function LoginPage() {
               Virtual What If Box
             </span>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
-          <p className="text-gray-600">Sign in to create and manage your What If Boxes</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Join the Community</h1>
+          <p className="text-gray-600">Create your account and start asking the questions that matter</p>
         </div>
 
         <Card className="border-0 shadow-xl">
           <CardHeader>
-            <CardTitle className="text-2xl text-center">Sign In</CardTitle>
+            <CardTitle className="text-2xl text-center">Create Account</CardTitle>
             <CardDescription className="text-center">
-              Continue inspiring your community with thought-provoking questions
+              Start creating What If Boxes and inspiring your community
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -131,38 +153,75 @@ export default function LoginPage() {
                   <AlertDescription>{error}</AlertDescription>
                 </Alert>
               )}
+              {success && (
+                <Alert className="border-green-500 text-green-700 bg-green-50">
+                  <AlertDescription>{success}</AlertDescription>
+                </Alert>
+              )}
+              
+              <div className="space-y-2">
+                <Label htmlFor="name">Full Name</Label>
+                <Input
+                  id="name"
+                  name="name"
+                  type="text"
+                  placeholder="Your full name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
+                  name="email"
                   type="email"
                   placeholder="you@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={formData.email}
+                  onChange={handleChange}
                   required
                 />
               </div>
+              
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
                 <Input
                   id="password"
+                  name="password"
                   type="password"
-                  placeholder="Your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Choose a strong password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                  minLength={6}
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <Input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type="password"
+                  placeholder="Confirm your password"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
                   required
                 />
               </div>
+              
               <Button type="submit" className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600" disabled={isLoading}>
-                {isLoading ? "Signing in..." : "Sign In"}
+                {isLoading ? "Creating Account..." : "Create Account"}
               </Button>
             </form>
           </CardContent>
           <CardFooter className="flex flex-col items-center justify-center space-y-2">
             <div className="text-sm text-gray-600">
-              Don't have an account?{" "}
-              <Link href="/signup" className="text-blue-600 hover:text-blue-800 font-medium">
-                Create one now
+              Already have an account?{" "}
+              <Link href="/login" className="text-blue-600 hover:text-blue-800 font-medium">
+                Sign in
               </Link>
             </div>
           </CardFooter>
@@ -170,4 +229,4 @@ export default function LoginPage() {
       </div>
     </div>
   )
-}
+} 
