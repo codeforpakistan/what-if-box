@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Lightbulb, ArrowLeft } from "lucide-react"
-import { getSupabaseClient } from "@/lib/supabase-client"
+import { createClient } from "@/utils/supabase/client"
 
 export default function SignUpPage() {
   const [formData, setFormData] = useState({
@@ -29,7 +29,7 @@ export default function SignUpPage() {
   useEffect(() => {
     const checkSession = async () => {
       try {
-        const supabase = getSupabaseClient()
+        const supabase = createClient()
         const {
           data: { session },
         } = await supabase.auth.getSession()
@@ -73,7 +73,7 @@ export default function SignUpPage() {
     }
 
     try {
-      const supabase = getSupabaseClient()
+      const supabase = createClient()
       
       // Sign up the user
       const { data, error: signUpError } = await supabase.auth.signUp({

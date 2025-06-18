@@ -13,7 +13,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { Lightbulb, LayoutDashboard, Box, MessageSquare, LogOut, Settings } from "lucide-react"
-import { getSupabaseClient } from "@/lib/supabase-client"
+import { createClient } from "@/utils/supabase/client"
 import { useRouter } from "next/navigation"
 
 export function DashboardSidebar() {
@@ -21,10 +21,22 @@ export function DashboardSidebar() {
   const router = useRouter()
 
   const handleSignOut = async () => {
-    const supabase = getSupabaseClient()
-    await supabase.auth.signOut()
-    router.push("/login")
-    router.refresh()
+    try {
+      const response = await fetch('/auth/signout', {
+        method: 'POST',
+      })
+      if (response.ok) {
+        router.push("/login")
+        router.refresh()
+      }
+    } catch (error) {
+      console.error('Sign out error:', error)
+      // Fallback to client-side sign out
+      const supabase = createClient()
+      await supabase.auth.signOut()
+      router.push("/login")
+      router.refresh()
+    }
   }
 
   return (

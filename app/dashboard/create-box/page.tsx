@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Switch } from "@/components/ui/switch"
-import { getSupabaseClient } from "@/lib/supabase-client"
+import { createClient } from "@/utils/supabase/client"
 
 export default function NewBoxPage() {
   const [formData, setFormData] = useState({
@@ -52,7 +52,7 @@ export default function NewBoxPage() {
     setError(null)
 
     try {
-      const supabase = getSupabaseClient()
+      const supabase = createClient()
 
       // Get current user
       const {

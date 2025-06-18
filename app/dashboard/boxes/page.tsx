@@ -7,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Badge } from "@/components/ui/badge"
 import { Plus, MoreHorizontal, QrCode, ExternalLink, Pencil, Trash2 } from "lucide-react"
-import { getSupabaseClient } from "@/lib/supabase-client"
+import { createClient } from "@/utils/supabase/client"
 import { formatDistanceToNow } from "date-fns"
 
 interface WhatIfBox {
@@ -26,7 +26,7 @@ export default function BoxesPage() {
   useEffect(() => {
     const fetchBoxes = async () => {
       try {
-        const supabase = getSupabaseClient()
+        const supabase = createClient()
         const { data, error } = await supabase
           .from("what_if_boxes")
           .select("*")
@@ -48,7 +48,7 @@ export default function BoxesPage() {
     if (!confirm("Are you sure you want to delete this What If Box?")) return
 
     try {
-      const supabase = getSupabaseClient()
+      const supabase = createClient()
       const { error } = await supabase.from("what_if_boxes").delete().eq("id", id)
 
       if (error) throw error
@@ -62,7 +62,7 @@ export default function BoxesPage() {
 
   const handleToggleActive = async (id: string, currentStatus: boolean) => {
     try {
-      const supabase = getSupabaseClient()
+      const supabase = createClient()
       const { error } = await supabase.from("what_if_boxes").update({ is_active: !currentStatus }).eq("id", id)
 
       if (error) throw error

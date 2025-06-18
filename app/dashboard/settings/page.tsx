@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { getSupabaseClient } from "@/lib/supabase-client"
+import { createClient } from "@/utils/supabase/client"
 
 export default function SettingsPage() {
   const [userData, setUserData] = useState({
@@ -31,7 +31,7 @@ export default function SettingsPage() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const supabase = getSupabaseClient()
+        const supabase = createClient()
         const {
           data: { user },
         } = await supabase.auth.getUser()
@@ -69,7 +69,7 @@ export default function SettingsPage() {
     setProfileSuccess(null)
 
     try {
-      const supabase = getSupabaseClient()
+      const supabase = createClient()
 
       const { error } = await supabase.auth.updateUser({
         email: userData.email,
@@ -97,7 +97,7 @@ export default function SettingsPage() {
         throw new Error("New passwords do not match")
       }
 
-      const supabase = getSupabaseClient()
+      const supabase = createClient()
 
       // First sign in with current password
       const { error: signInError } = await supabase.auth.signInWithPassword({

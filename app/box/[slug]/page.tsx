@@ -11,7 +11,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Lightbulb, Send } from "lucide-react"
-import { getSupabaseClient } from "@/lib/supabase-client"
+import { createClient } from "@/utils/supabase/client"
 
 interface BoxPageProps {
   params: {
@@ -36,7 +36,7 @@ export default function BoxPage({ params }: BoxPageProps) {
   useEffect(() => {
     const fetchBox = async () => {
       try {
-        const supabase = getSupabaseClient()
+        const supabase = createClient()
 
         // Get box data
         const { data: boxData, error: boxError } = await supabase
@@ -89,7 +89,7 @@ export default function BoxPage({ params }: BoxPageProps) {
         throw new Error("Please enter a response")
       }
 
-      const supabase = getSupabaseClient()
+      const supabase = createClient()
 
       // Submit response
       const { error: submitError } = await supabase.from("responses").insert({

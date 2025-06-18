@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { getSupabaseClient } from "@/lib/supabase-client"
+import { createClient } from "@/utils/supabase/client"
 import { QRCodeSVG } from "qrcode.react"
 import { Download, Copy, Share2 } from "lucide-react"
 
@@ -37,8 +37,8 @@ export default function QRCodePage({ params }: QRCodePageProps) {
           throw new Error("Invalid box ID format")
         }
 
-        const supabase = getSupabaseClient()
-        const { data, error } = await supabase.from("what_if_boxes").select("*").eq("id", params.id).single()
+              const supabase = createClient()
+      const { data, error } = await supabase.from("what_if_boxes").select("*").eq("id", params.id).single()
 
         if (error) throw error
         setBox(data)

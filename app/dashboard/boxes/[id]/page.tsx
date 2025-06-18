@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Switch } from "@/components/ui/switch"
-import { getSupabaseClient } from "@/lib/supabase-client"
+import { createClient } from "@/utils/supabase/client"
 
 interface BoxPageProps {
   params: {
@@ -48,7 +48,7 @@ export default function EditBoxPage({ params }: BoxPageProps) {
           throw new Error("Invalid box ID format")
         }
 
-        const supabase = getSupabaseClient()
+        const supabase = createClient()
         const { data, error } = await supabase.from("what_if_boxes").select("*").eq("id", params.id).single()
 
         if (error) throw error
@@ -94,7 +94,7 @@ export default function EditBoxPage({ params }: BoxPageProps) {
         throw new Error("Invalid box ID format")
       }
 
-      const supabase = getSupabaseClient()
+      const supabase = createClient()
 
       // Check if slug is unique (excluding this box)
       const { data: existingBox } = await supabase

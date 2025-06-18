@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { MoreHorizontal, Check, X } from "lucide-react"
-import { getSupabaseClient } from "@/lib/supabase-client"
+import { createClient } from "@/utils/supabase/client"
 import { formatDistanceToNow } from "date-fns"
 
 interface Response {
@@ -31,7 +31,7 @@ export default function ResponsesPage() {
   useEffect(() => {
     const fetchResponses = async () => {
       try {
-        const supabase = getSupabaseClient()
+        const supabase = createClient()
         
         // Get current user first
         const { data: { user }, error: userError } = await supabase.auth.getUser()
@@ -87,7 +87,7 @@ export default function ResponsesPage() {
 
   const handleApproveResponse = async (id: string) => {
     try {
-      const supabase = getSupabaseClient()
+      const supabase = createClient()
       const { error } = await supabase.from("responses").update({ is_approved: true }).eq("id", id)
 
       if (error) throw error
@@ -101,7 +101,7 @@ export default function ResponsesPage() {
 
   const handleRejectResponse = async (id: string) => {
     try {
-      const supabase = getSupabaseClient()
+      const supabase = createClient()
       const { error } = await supabase.from("responses").delete().eq("id", id)
 
       if (error) throw error

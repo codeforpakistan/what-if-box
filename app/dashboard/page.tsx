@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { getSupabaseClient } from "@/lib/supabase-client"
+import { createClient } from "@/utils/supabase/client"
 import { Box, MessageSquare, Users, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
@@ -20,7 +20,7 @@ export default function DashboardPage() {
   useEffect(() => {
     const fetchUserAndStats = async () => {
       try {
-        const supabase = getSupabaseClient()
+        const supabase = createClient()
 
         // Get current user
         const { data: { user: currentUser }, error: userError } = await supabase.auth.getUser()

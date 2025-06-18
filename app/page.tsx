@@ -4,7 +4,7 @@ import Link from "next/link"
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Lightbulb, Globe, Users, QrCode, MessageCircle, Sparkles, Heart } from "lucide-react"
-import { getSupabaseClient } from "@/lib/supabase-client"
+import { createClient } from "@/utils/supabase/client"
 
 export default function Home() {
   const [stats, setStats] = useState({
@@ -17,7 +17,7 @@ export default function Home() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const supabase = getSupabaseClient()
+        const supabase = createClient()
 
         // Get total boxes
         const { count: totalBoxes } = await supabase
