@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Loader2 } from "lucide-react"
 import { createClient } from "@/utils/supabase/client"
 
 export default function LoginForm() {
@@ -37,8 +38,7 @@ export default function LoginForm() {
     } catch (error: any) {
       console.error("Login error:", error)
       setError(error.message || "Failed to sign in")
-    } finally {
-      setIsLoading(false)
+      setIsLoading(false) // Only set loading to false on error, let success handle the redirect
     }
   }
 
@@ -57,6 +57,7 @@ export default function LoginForm() {
           placeholder="you@example.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          disabled={isLoading}
           required
         />
       </div>
@@ -68,12 +69,30 @@ export default function LoginForm() {
           placeholder="Your password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          disabled={isLoading}
           required
         />
       </div>
-      <Button type="submit" className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600" disabled={isLoading}>
-        {isLoading ? "Signing in..." : "Sign In"}
+      <Button 
+        type="submit" 
+        className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600" 
+        disabled={isLoading}
+      >
+        {isLoading ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Signing you in...
+          </>
+        ) : (
+          "Sign In"
+        )}
       </Button>
+      
+      {isLoading && (
+        <div className="text-center text-sm text-gray-600">
+          Please wait while we authenticate you...
+        </div>
+      )}
     </form>
   )
 } 

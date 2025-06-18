@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Lightbulb, ArrowLeft } from "lucide-react"
+import { Lightbulb, ArrowLeft, Loader2 } from "lucide-react"
 import { createClient } from "@/utils/supabase/client"
 
 export default function SignUpPage() {
@@ -169,6 +169,7 @@ export default function SignUpPage() {
                   placeholder="Your full name"
                   value={formData.name}
                   onChange={handleChange}
+                  disabled={isLoading}
                   required
                 />
               </div>
@@ -182,6 +183,7 @@ export default function SignUpPage() {
                   placeholder="you@example.com"
                   value={formData.email}
                   onChange={handleChange}
+                  disabled={isLoading}
                   required
                 />
               </div>
@@ -195,6 +197,7 @@ export default function SignUpPage() {
                   placeholder="Choose a strong password"
                   value={formData.password}
                   onChange={handleChange}
+                  disabled={isLoading}
                   required
                   minLength={6}
                 />
@@ -209,13 +212,27 @@ export default function SignUpPage() {
                   placeholder="Confirm your password"
                   value={formData.confirmPassword}
                   onChange={handleChange}
+                  disabled={isLoading}
                   required
                 />
               </div>
               
               <Button type="submit" className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600" disabled={isLoading}>
-                {isLoading ? "Creating Account..." : "Create Account"}
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Creating Account...
+                  </>
+                ) : (
+                  "Create Account"
+                )}
               </Button>
+              
+              {isLoading && (
+                <div className="text-center text-sm text-gray-600">
+                  Please wait while we create your account...
+                </div>
+              )}
             </form>
           </CardContent>
           <CardFooter className="flex flex-col items-center justify-center space-y-2">
